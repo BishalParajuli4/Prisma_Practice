@@ -11,18 +11,20 @@ export const createUserContoller=async(req:Request,res:Response)=>{
    catch{
     res.status(404).json("Unable to create users")
    }
+   return
 }
 
 export const updteUserController=async(req:Request,res:Response)=>{
     try{
         const u_id =Number(req.params.id)
         const {name,email,password}=req.body
-        const updaetd=await Update_User_Model({u_id,name,email,password})
-        res.status(200).json(updaetd)
+        const updated=await Update_User_Model({u_id,name,email,password})
+        res.status(200).json(updated)
     }
     catch{
         res.status(404).json("Unable to update")
     }
+    return
 }
 export const getUserController=async(req:Request,res:Response)=>{
     try{
@@ -31,6 +33,7 @@ export const getUserController=async(req:Request,res:Response)=>{
     }catch{
         res.status(404).json("Unable to fetch the data")
     }
+    return
 }
 
 export const getByidController=async(req:Request,res:Response)=>{
@@ -43,6 +46,7 @@ export const getByidController=async(req:Request,res:Response)=>{
     catch{
         res.status(404).json("Unable to find the data")
     }
+    return
 }
 export const deleteUserCOntroller=async(req:Request,res:Response)=>{
     try{
@@ -54,5 +58,6 @@ export const deleteUserCOntroller=async(req:Request,res:Response)=>{
     }catch{
         res.status(404).json("Unable to delete user")
     }
+    return
 }
 
