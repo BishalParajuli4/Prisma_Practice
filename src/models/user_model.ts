@@ -11,7 +11,7 @@ export async function Create_User_Model(data: {
       email: data.email,
       password: data.password,
     },
-  });
+  })
   return createUser;
 }
 
