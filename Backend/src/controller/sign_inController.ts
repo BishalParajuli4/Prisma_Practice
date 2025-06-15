@@ -1,29 +1,34 @@
 import { Request, Response } from "express";
-import { Create_Signin_Model, Get_By_Mail, Sign_in_Model } from "../models/Sign_in_Model";
+import { checkinUserLogin, checkUserbyEmail, storeUserLoginModal } from "../models/Sign_in_Model";
 
-export const CheckUserCredentialsController = async (
-  req: Request,
-  res: Response
-) => {
-  const { u_email, u_password } = req.body;
 
+const checkLogin = async (req: Request, res: Response) => {
   try {
-    const user = await Sign_in_Model(u_email, u_password);
+    const { email, password } = req.body;
 
-    if (user.length > 0) {
-      const check_Mail = await Get_By_Mail(u_email);
+    if (!email || !password) {
+      res.status(404).json("Undefined");
+      return;
+    }
+    const check = await checkUserbyEmail(email, password);
+    // res.status(200).json(check);
 
-      if (check_Mail.length === 0) {
-        res.status(202).json("User Already Logged In!");
+    if (check && check.length > 0) {
+      const checkMail = await checkinUserLogin(email);
+
+      if (checkMail === undefined || checkMail === null) {
+        const store = await storeUserLoginModal({ name: "New User", email, password });
+        res.status(200).json("Welcome new user, you are logged in");
       } else {
-        const created = await Create_Signin_Model(req.body);
-        res.status(200).json(created);
+        res.status(200).json("Welcome back, you are logged in successfully " + checkMail.name + "!" + checkMail.email );
       }
     } else {
-      res.status(401).json({ message: "Invalid username or password" });
+      res.status(404).json("User not found or incorrect credentials");
     }
   } catch (error) {
-    console.error("Error during Login:", error);
-    res.status(500).json({ message: "Internal server error" });
+    console.log(error);
+    res.status(505).json("Internal Server Error");
   }
+  return;
 };
+export { checkLogin };

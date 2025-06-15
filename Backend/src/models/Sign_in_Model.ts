@@ -1,39 +1,39 @@
+
 import { prisma } from "../db";
 
-export const Sign_in_Model = async (u_email: string, u_password: string) => {
-  const checkUser = await prisma.user.findMany({
-    where: {
-      email: u_email,
-      password: u_password,
-    },
-    select: { email: true, password: true },
-  });
-  return checkUser;
-};
-
-export async function Create_Signin_Model(data: {
+async function storeUserLoginModal(data: {
+  name: string;
   email: string;
   password: string;
-  u_id: number;
 }) {
-  const createUser = await prisma.login.create({
+   
+  const storeLogin = await prisma.user.create({
     data: {
-      u_id: data.u_id,
+      name: data.name,
       email: data.email,
       password: data.password,
     },
   });
-  return createUser;
+
+  return storeLogin;
 }
 
-export const Get_By_Mail = async (u_email: string) => {
-  const checkUser = await prisma.login.findMany({
+async function checkUserbyEmail(email: string, password: string) {
+  const data = await prisma.user.findMany({
     where: {
-      email: u_email,
+      email,
+      password,
     },
-    select:{
-      email:true
-    }
-    });
-  return checkUser;
-};
+  });
+  return data;
+}
+async function checkinUserLogin(email:string) {
+    const data=await prisma.user.findFirst({
+        where:{
+            email:email
+        }
+    })
+    return data
+    
+}
+export { storeUserLoginModal, checkUserbyEmail,checkinUserLogin };
