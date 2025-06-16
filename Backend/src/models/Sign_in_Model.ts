@@ -1,39 +1,52 @@
-
 import { prisma } from "../db";
 
+// Create new user and store token
 async function storeUserLoginModal(data: {
   name: string;
   email: string;
   password: string;
+  token?: string;
 }) {
-   
-  const storeLogin = await prisma.user.create({
+  const storeLogin = await prisma.login.create({
     data: {
       name: data.name,
       email: data.email,
       password: data.password,
+      token: data.token,
     },
   });
 
   return storeLogin;
 }
 
+// Check user credentials
 async function checkUserbyEmail(email: string, password: string) {
-  const data = await prisma.user.findMany({
-    where: {
-      email,
-      password,
-    },
+  const data = await prisma.login.findMany({
+    where: { email, password },
   });
   return data;
 }
-async function checkinUserLogin(email:string) {
-    const data=await prisma.user.findFirst({
-        where:{
-            email:email
-        }
-    })
-    return data
-    
+
+// Get user by email
+async function checkinUserLogin(email: string) {
+  const data = await prisma.login.findFirst({
+    where: { email },
+  });
+  return data;
 }
-export { storeUserLoginModal, checkUserbyEmail,checkinUserLogin };
+
+// Update or clear user token
+async function updateUserToken(email: string, token: string | null) {
+  const updatedUser = await prisma.login.update({
+    where: { email },
+    data: { token },
+  });
+  return updatedUser;
+}
+
+export {
+  storeUserLoginModal,
+  checkUserbyEmail,
+  checkinUserLogin,
+  updateUserToken,
+};
