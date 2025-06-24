@@ -10,6 +10,7 @@ import {
   NavbarLink,
   NavbarToggle,
 } from "flowbite-react";
+import { HomeBody } from "./content/homeBody";
 
 function App() {
   return (
@@ -62,25 +63,7 @@ function App() {
         </NavbarCollapse>
       </Navbar>
 
-      <div>
-        <center className="bg-amber-200 ">
-          <form method="post">
-            <a>
-              Name: <input type="text" id="Name" />
-              <br />
-            </a>
-            <a>
-              E-Mail: <input type="gmail" id="Email" />
-              <br />
-            </a>
-            <a>
-              Password: <input type="password" id="Password" />
-              <br />
-            </a>
-            <input type="submit" value="Submit" className="border-2" />
-          </form>
-        </center>
-      </div>
+      <HomeBody />
     </>
   );
 }

@@ -66,7 +66,7 @@
 //     if (!name || !email || !password) {
 //      res.status(400).json({ error: "Name, email, and password are required." });
 //       return;
-    
+
 //     }
 
 //     const existingUser = await prisma.login.findUnique({
@@ -137,8 +137,6 @@
 
 // export { checkLogin, signup, logout };
 
-
-
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { prisma } from "../db";
@@ -160,16 +158,21 @@ const checkLogin = async (req: Request, res: Response) => {
       return;
     }
 
-    const token = jwt.sign({ id: user.id, email }, JWT_SECRET, { expiresIn: "1h" });
+    const token = jwt.sign({ id: user.id, email }, JWT_SECRET, {
+      expiresIn: "1h",
+    });
     const hashedToken = await bcrypt.hash(token, 10);
 
-    await prisma.login.update({ where: { email }, data: { token: hashedToken } });
+    await prisma.login.update({
+      where: { email },
+      data: { token: hashedToken },
+    });
 
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       maxAge: 60 * 60 * 1000,
-      sameSite: "strict",
+      sameSite: "lax",
     });
 
     res.status(200).json({ message: "Login successful", token });
@@ -192,13 +195,13 @@ const signup = async (req: Request, res: Response) => {
       return;
     }
 
-    const token = jwt.sign({ email }, JWT_SECRET, { expiresIn: "1h" });
+    const token = jwt.sign({ email }, JWT_SECRET, { expiresIn: "20sec" });
     const hashedToken = await bcrypt.hash(token, 10);
 
     const newUser = await prisma.login.create({
       data: { name, email, password, token: hashedToken },
     });
-
+    console.log(token);
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -215,23 +218,26 @@ const signup = async (req: Request, res: Response) => {
 const logout = async (req: Request, res: Response) => {
   try {
     const token = req.cookies.token;
-    if (!token){ 
-      res.status(400).json({ error: "No token" });
-       return; 
-      }
+    if (!token) {
+      res.status(400).json({ error: "No token provided" });
+      return;
+    }
 
     const decoded = jwt.verify(token, JWT_SECRET) as { email: string };
-    await prisma.login.update({ where: { email: decoded.email }, data: { token: null } });
+    await prisma.login.update({
+      where: { email: decoded.email },
+      data: { token: null },
+    });
 
     res.clearCookie("token", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: "lax",
     });
 
-    res.status(200).json({ message: "Logout successful" });
+    res.status(200).json({ message: "Logged out successfully" });
   } catch {
-    res.status(500).json({ error: "Server error" });
+    res.status(500).json({ error: "Server error during logout" });
   }
 };
 

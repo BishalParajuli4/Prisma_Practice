@@ -22,15 +22,17 @@ model User {
   created_at DateTime   @default(now())
   Category   Category[]
   Todo       Todo[]
+  Product    Product[] // Add this line for the relation
   role       Role       @default(user)
 }
 
 model Category {
-  c_id Int    @id @default(autoincrement())
-  name String
-  u_id Int
-  user User   @relation(fields: [u_id], references: [u_id])
-  Todo Todo[]
+  c_id     Int       @id @default(autoincrement())
+  name     String
+  u_id     Int
+  user     User      @relation(fields: [u_id], references: [u_id])
+  Todo     Todo[]
+  products Product[]
 }
 
 model Todo {
@@ -46,15 +48,28 @@ model Todo {
 }
 
 model Login {
-  id       Int     @id @default(autoincrement())
-  name     String
-  email    String  @unique
-  password String
-  token    String? // Store JWT token
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  token     String? // Store JWT token
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
+model Product {
+  p_id        Int      @id @default(autoincrement())
+  name        String
+  price       Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userId      Int
+  user        User     @relation(fields: [userId], references: [u_id])
+  categoryId  Int
+  category    Category @relation(fields: [categoryId], references: [c_id])
+  description String?
+  imageUrl    String?
+}
 
 enum Role {
   user
