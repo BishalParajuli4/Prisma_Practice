@@ -49,3 +49,12 @@ export async function delete_Category_Model(id: number) {
   });
   return data;
 }
+
+export async function getCategory_ByName_Model(name: string){
+  const data = await prisma.category.findMany({
+    where:{
+      name:name,
+    },
+  });
+  return data;
+}

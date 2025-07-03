@@ -1,6 +1,6 @@
 
 import { Request, Response } from "express";
-import { Create_Category_Model, Update_Category_Model, getAll_Category_Model, getCategory_ById_Model, delete_Category_Model } from "../models/category_model";
+import { Create_Category_Model, Update_Category_Model, getAll_Category_Model, getCategory_ById_Model, delete_Category_Model, getCategory_ByName_Model } from "../models/category_model";
 export const createCategoryController = async(req:Request, res:Response) =>{
     try {
         const createCategory = await Create_Category_Model(req.body)
@@ -54,3 +54,14 @@ export const deleteCategoryController = async(req:Request, res:Response) =>{
     }
     return;
 }
+
+export const getCategoryByNameController = async (req: Request, res: Response) => {
+    try {
+        const { name } = req.params;
+        const data = await getCategory_ByName_Model(name);
+        res.status(200).json(data);
+    } catch {
+        res.status(404).json("Unable to Get Category By Name");
+    }
+    return;
+};
